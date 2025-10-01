@@ -1,0 +1,1 @@
+./configure --my-transport=rf24 --my-gateway=ethernet --my-port=5003 --my-rf24-channel=27 --soc=BCM2837 --cpu-flags="-march=armv8-a+crc -mtune=cortex-a53" 
