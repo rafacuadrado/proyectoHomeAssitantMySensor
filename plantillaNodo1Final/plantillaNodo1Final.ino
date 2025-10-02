@@ -34,7 +34,7 @@
 #define MY_RADIO_RF24 
 #define MY_RF24_CE_PIN 10
 #define MY_RF24_CS_PIN 9
-#define MY_RF24_CHANNEL 10 //27 el nuestro
+#define MY_RF24_CHANNEL 27
 #define MY_NODE_ID 44
 
 // Enable repeater functionality for this node
@@ -44,34 +44,46 @@
 
 #define RELAY_PIN 4  // Arduino Digital I/O pin number for first relay (second on pin+1 etc)
 #define SENSOR_RELAY_ID 12
+#define SWITCH_PIN 3
+#define SENSOR_SWITCH_ID 11
 MyMessage relayCom(SENSOR_RELAY_ID,V_STATUS);
-
+MyMessage switchCom(SENSOR_SWITCH_ID,V_STATUS);
+int estadoAnterior=0;
+int estadoActual=0;
 void presentation()
 {
 	// Send the sketch version information to the gateway and Controller
 	sendSketchInfo("Relay_PRUEBA", "1.0");
 //PRESENTAR LOS SENSORES
 	present(SENSOR_RELAY_ID,S_BINARY);
-	
+	present(SENSOR_SWITCH_ID,S_BINARY);
 }
 
 
 void setup()
 {
 	pinMode(RELAY_PIN,OUTPUT);
+	pinMode(SWITCH_PIN,INPUT_PULLUP);
 	//Solo para HomeAssistant
 	
 	//Modificar el dato
 	relayCom.set(0);
+	switchCom.set(0);
 	//Enviar dato
 	send(relayCom);
+	send(switchCom);
 
 }
 
 
 void loop()
 {
-
+	estadoAnterior=estadoActual;
+	estadoActual=digitalRead(SWITCH_PIN);
+	if(estadoActual!=estadoActual){
+		switchCom.set(estadoActual);
+		send(switchCom);
+	}
 }
 
 void receive(const MyMessage &message)
